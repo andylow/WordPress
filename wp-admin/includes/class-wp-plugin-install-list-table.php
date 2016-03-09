@@ -86,15 +86,15 @@ class WP_Plugin_Install_List_Table extends WP_List_Table {
 		$tabs = array();
 
 		if ( 'search' === $tab ) {
-			$tabs['search']	= __( 'Search Results' );
+			$tabs['search'] = __( 'Search Results' );
 		}
-		$tabs['featured']  = _x( 'Featured', 'Plugin Installer' );
-		$tabs['popular']   = _x( 'Popular', 'Plugin Installer' );
-		$tabs['recommended']   = _x( 'Recommended', 'Plugin Installer' );
-		$tabs['favorites'] = _x( 'Favorites', 'Plugin Installer' );
 		if ( $tab === 'beta' || false !== strpos( $GLOBALS['wp_version'], '-' ) ) {
-			$tabs['beta']      = _x( 'Beta Testing', 'Plugin Installer' );
+			$tabs['beta'] = _x( 'Beta Testing', 'Plugin Installer' );
 		}
+		$tabs['featured']    = _x( 'Featured', 'Plugin Installer' );
+		$tabs['popular']     = _x( 'Popular', 'Plugin Installer' );
+		$tabs['recommended'] = _x( 'Recommended', 'Plugin Installer' );
+		$tabs['favorites']   = _x( 'Favorites', 'Plugin Installer' );
 		if ( current_user_can( 'upload_plugins' ) ) {
 			// No longer a real tab. Here for filter compatibility.
 			// Gets skipped in get_views().
@@ -461,7 +461,7 @@ class WP_Plugin_Install_List_Table extends WP_List_Table {
 					case 'update_available':
 						if ( $status['url'] ) {
 							/* translators: 1: Plugin name and version */
-							$action_links[] = '<a class="update-now button" data-plugin="' . esc_attr( $status['file'] ) . '" data-slug="' . esc_attr( $plugin['slug'] ) . '" href="' . esc_url( $status['url'] ) . '" aria-label="' . esc_attr( sprintf( __( 'Update %s now' ), $name ) ) . '" data-name="' . esc_attr( $name ) . '">' . __( 'Update Now' ) . '</a>';
+							$action_links[] = '<a class="update-now button aria-button-if-js" data-plugin="' . esc_attr( $status['file'] ) . '" data-slug="' . esc_attr( $plugin['slug'] ) . '" href="' . esc_url( $status['url'] ) . '" aria-label="' . esc_attr( sprintf( __( 'Update %s now' ), $name ) ) . '" data-name="' . esc_attr( $name ) . '">' . __( 'Update Now' ) . '</a>';
 						}
 
 						break;
@@ -498,7 +498,6 @@ class WP_Plugin_Install_List_Table extends WP_List_Table {
 			 */
 			$action_links = apply_filters( 'plugin_install_action_links', $action_links, $plugin );
 
-			$date_format = __( 'M j, Y @ H:i' );
 			$last_updated_timestamp = strtotime( $plugin['last_updated'] );
 		?>
 		<div class="plugin-card plugin-card-<?php echo sanitize_html_class( $plugin['slug'] ); ?>">

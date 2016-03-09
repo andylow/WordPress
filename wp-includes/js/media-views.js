@@ -282,8 +282,10 @@ Cropper = wp.media.controller.State.extend({
 		toolbar:     'crop',
 		content:     'crop',
 		router:      false,
+		canSkipCrop: false,
 
-		canSkipCrop: false
+		// Default doCrop Ajax arguments to allow the Customizer (for example) to inject state.
+		doCropArgs: {}
 	},
 
 	activate: function() {
@@ -367,11 +369,15 @@ Cropper = wp.media.controller.State.extend({
 	},
 
 	doCrop: function( attachment ) {
-		return wp.ajax.post( 'custom-header-crop', {
-			nonce: attachment.get('nonces').edit,
-			id: attachment.get('id'),
-			cropDetails: attachment.get('cropDetails')
-		} );
+		return wp.ajax.post( 'custom-header-crop', _.extend(
+			{},
+			this.defaults.doCropArgs,
+			{
+				nonce: attachment.get( 'nonces' ).edit,
+				id: attachment.get( 'id' ),
+				cropDetails: attachment.get( 'cropDetails' )
+			}
+		) );
 	}
 });
 
@@ -1214,11 +1220,32 @@ Library = wp.media.controller.State.extend({
 	 * @returns {Object}
 	 */
 	defaultDisplaySettings: function( attachment ) {
-		var settings = this._defaultDisplaySettings;
+		var settings = _.clone( this._defaultDisplaySettings );
+
 		if ( settings.canEmbed = this.canEmbed( attachment ) ) {
 			settings.link = 'embed';
+		} else if ( ! this.isImageAttachment( attachment ) && settings.link === 'none' ) {
+			settings.link = 'file';
 		}
+
 		return settings;
+	},
+
+	/**
+	 * Whether an attachment is image.
+	 *
+	 * @since 4.4.1
+	 *
+	 * @param {wp.media.model.Attachment} attachment
+	 * @returns {Boolean}
+	 */
+	isImageAttachment: function( attachment ) {
+		// If uploading, we know the filename but not the mime type.
+		if ( attachment.get('uploading') ) {
+			return /\.(jpe?g|png|gif)$/i.test( attachment.get('filename') );
+		}
+
+		return attachment.get('type') === 'image';
 	},
 
 	/**
@@ -3733,7 +3760,7 @@ AttachmentsBrowser = View.extend({
 			AttachmentView: wp.media.view.Attachment.Library
 		});
 
-		this.listenTo( this.controller, 'toggle:upload:attachment', _.bind( this.toggleUploader, this ) );
+		this.controller.on( 'toggle:upload:attachment', this.toggleUploader, this );
 		this.controller.on( 'edit:selection', this.editSelection );
 		this.createToolbar();
 		if ( this.options.sidebar ) {

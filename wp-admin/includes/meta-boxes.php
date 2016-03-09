@@ -190,15 +190,10 @@ if ( 0 != $post->ID ) {
 	$date = date_i18n( $datef, strtotime( current_time('mysql') ) );
 }
 
-if ( ! empty( $args['args']['revisions_count'] ) ) :
-	$revisions_to_keep = wp_revisions_to_keep( $post );
-?>
+if ( ! empty( $args['args']['revisions_count'] ) ) : ?>
 <div class="misc-pub-section misc-pub-revisions">
 	<?php printf( __( 'Revisions: %s' ), '<b>' . number_format_i18n( $args['args']['revisions_count'] ) . '</b>' ); ?>
 	<a class="hide-if-no-js" href="<?php echo esc_url( get_edit_post_link( $args['args']['revision_id'] ) ); ?>"><span aria-hidden="true"><?php _ex( 'Browse', 'revisions' ); ?></span> <span class="screen-reader-text"><?php _e( 'Browse revisions' ); ?></span></a>
-	<?php if ( $revisions_to_keep > 0 ) : ?>
-	<span class="howto"><?php printf( __( 'Your site is configured to keep only the last %s revisions' ), number_format_i18n( $revisions_to_keep ) ) ?></span>
-	<?php endif; ?>
 </div>
 <?php endif;
 
@@ -1173,6 +1168,8 @@ function link_advanced_meta_box($link) {
  * Display post thumbnail meta box.
  *
  * @since 2.9.0
+ *
+ * @param WP_Post $post A post object.
  */
 function post_thumbnail_meta_box( $post ) {
 	$thumbnail_id = get_post_meta( $post->ID, '_thumbnail_id', true );
@@ -1184,7 +1181,7 @@ function post_thumbnail_meta_box( $post ) {
  *
  * @since 3.9.0
  *
- * @param WP_Post $post
+ * @param WP_Post $post A post object.
  */
 function attachment_id3_data_meta_box( $post ) {
 	$meta = array();
